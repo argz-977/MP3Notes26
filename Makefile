@@ -3,10 +3,10 @@ TARGET = iphone:clang:16.3:14.0
 
 include $(THEOS)/makefiles/common.mk
 
-TWEAK_NAME = NotesMP3Tweak
+TWEAK_NAME = MP3Notes26
 
-NotesMP3Tweak_FILES = Tweak.xm
-NotesMP3Tweak_FRAMEWORKS = UIKit Foundation
+MP3Notes26_FILES = Tweak.xm
+MP3Notes26_FRAMEWORKS = UIKit Foundation
 
 include $(THEOS)/makefiles/tweak.mk
 

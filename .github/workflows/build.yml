@@ -1,0 +1,72 @@
+name: Build and (optional) Deploy NotesMP3Tweak
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Theos
+        run: |
+          sudo mkdir -p /opt/theos
+          sudo chown $(whoami) /opt/theos
+          if [ ! -d /opt/theos/.git ]; then git clone --depth=1 https://github.com/theos/theos.git /opt/theos; fi
+          echo "THEOS=/opt/theos" >> $GITHUB_ENV
+
+      - name: Install build tools
+        run: |
+          brew update || true
+          brew install dpkg || true
+          brew install ldid || true
+
+      - name: Build package
+        env:
+          THEOS: /opt/theos
+        run: |
+          cd NotesMP3Tweak || true
+          make package || true
+          ls -la || true
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: notesmp3tweak-deb
+          path: '**/*.deb'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ secrets.DEVICE_SSH_HOST && secrets.DEVICE_SSH_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: notesmp3tweak-deb
+          path: ./artifact
+
+      - name: Copy .deb to device
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.DEVICE_SSH_HOST }}
+          username: ${{ secrets.DEVICE_SSH_USER }}
+          key: ${{ secrets.DEVICE_SSH_KEY }}
+          port: ${{ secrets.DEVICE_SSH_PORT || '22' }}
+          source: './artifact/*.deb'
+          target: '/tmp/'
+
+      - name: Install package on device
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.DEVICE_SSH_HOST }}
+          username: ${{ secrets.DEVICE_SSH_USER }}
+          key: ${{ secrets.DEVICE_SSH_KEY }}
+          port: ${{ secrets.DEVICE_SSH_PORT || '22' }}
+          script: |
+            dpkg -i /tmp/*.deb || true
+            killall -9 Notes || true
