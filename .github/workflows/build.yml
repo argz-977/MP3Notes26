@@ -23,6 +23,7 @@ jobs:
           brew update || true
           brew install dpkg || true
           brew install ldid || true
+          cpanm JSON || true  # Install JSON Perl module often needed by Theos
 
       - name: Build package
         env:
