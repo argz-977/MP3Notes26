@@ -1,0 +1,9 @@
+Package: com.argz97.MP3Notes26
+Name: MP3Notes26
+Version: 0.1
+Architecture: iphoneos-arm
+Description: MP3 UI from iOS 26 to 16
+Maintainer: argz97@icloud.com
+Author: argz97
+Section: Tweaks
+Depends: mobilesubstrate
