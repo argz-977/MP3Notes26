@@ -30,8 +30,14 @@ jobs:
         run: |
           echo "THEOS=$THEOS"
           ls -la /opt/theos
-          make package
+          echo "Current directory: $(pwd)"
           ls -la
+          echo "Running make package..."
+          make package V=1 2>&1
+          echo "After make package:"
+          ls -la
+          echo "Searching for .deb files:"
+          find . -name "*.deb" -type f
 
       - name: Upload .deb artifact
         uses: actions/upload-artifact@v4
