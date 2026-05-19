@@ -28,8 +28,10 @@ jobs:
         env:
           THEOS: /opt/theos
         run: |
-          make package || true
-          ls -la || true
+          echo "THEOS=$THEOS"
+          ls -la /opt/theos
+          make package
+          ls -la
 
       - name: Upload .deb artifact
         uses: actions/upload-artifact@v4
