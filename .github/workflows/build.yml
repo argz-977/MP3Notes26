@@ -28,7 +28,6 @@ jobs:
         env:
           THEOS: /opt/theos
         run: |
-          cd NotesMP3Tweak || true
           make package || true
           ls -la || true
 
